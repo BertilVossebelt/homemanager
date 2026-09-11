@@ -1,0 +1,55 @@
+* {
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size: 13px;
+  min-height: 0;
+  border: none;
+  border-radius: 0;
+}
+
+window#waybar {
+  background-color: transparent;
+}
+
+window#waybar > box {
+  background-color: #000000;
+  border-radius: 8px;
+}
+
+#workspaces {
+  background: transparent;
+}
+
+#workspaces button {
+  padding: 4px 12px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.35);
+  border-radius: 5px;
+  margin: 5px 2px;
+  transition: all 0.15s ease;
+}
+
+#workspaces button.active {
+  background: #ffffff;
+  color: #000000;
+}
+
+#workspaces button:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+#clock {
+  color: #ffffff;
+  font-weight: bold;
+  padding: 0 14px;
+}
+
+#network,
+#pulseaudio {
+  padding: 0 10px;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+#tray {
+  padding: 0 8px;
+}

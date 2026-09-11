@@ -1,0 +1,9 @@
+[ui.anchors]
+bottom = false
+left   = false
+right  = false
+top    = false
+
+[ui.window]
+h_align = "center"
+v_align = "center"

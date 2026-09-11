@@ -1,0 +1,146 @@
+* {
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  color: #ffffff;
+  outline: none;
+}
+
+window {
+  background-color: transparent;
+}
+
+.box,
+.box-wrapper,
+.search-container {
+  background-color: #000000;
+  border-radius: 8px;
+  padding: 12px;
+  min-width: 800px;
+}
+
+.input {
+  background-color: transparent;
+  color: #ffffff;
+  caret-color: #ffffff;
+  border: 1px solid #ffffff;
+  border-radius: 4px;
+  padding: 8px 4px;
+  margin-bottom: 8px;
+  font-size: 16px;
+  box-shadow: none;
+}
+
+.input:focus {
+  box-shadow: none;
+  outline: none;
+}
+
+.input placeholder {
+  color: #ffffff;
+  opacity: 0.4;
+}
+
+.list {
+  background-color: transparent;
+  color: #ffffff;
+}
+
+.scroll {
+  background-color: transparent;
+}
+
+.preview,
+.preview-box,
+.preview-stack,
+.preview-content {
+  background-color: transparent;
+}
+
+/* GtkTextView internal nodes get dark backgrounds from the GTK4 theme */
+.preview-content textview,
+.preview-content textview > text,
+.preview-content textview > border {
+  all: unset;
+  background-color: transparent;
+  color: #ffffff;
+}
+
+/* ScrolledWindow wrapper inside preview */
+.preview-content scrolledwindow {
+  background-color: transparent;
+}
+
+.item-box {
+  background-color: transparent !important;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin: 2px 0;
+}
+
+/* GTK4 paints gridview > child:selected with its accent blue at PRIORITY_THEME.
+   `all: unset` at PRIORITY_USER fully wipes that before we re-apply our own
+   styles — a plain background-color override is not enough. */
+child,
+row {
+  all: unset;
+}
+
+child:hover,
+child:selected,
+row:hover,
+row:selected {
+  all: unset;
+}
+
+child:hover .item-box,
+child:selected .item-box,
+row:hover .item-box,
+row:selected .item-box {
+  box-shadow: inset 0 0 0 1px #ffffff;
+  border-radius: 6px;
+}
+
+.item-text,
+.item-image-text {
+  font-size: 16px;
+  color: #ffffff;
+}
+
+.item-subtext {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.item-quick-activation {
+  color: #ffffff;
+  font-size: 11px;
+}
+
+/* Keybind bar — minimal, no button aesthetic */
+.keybind-button {
+  all: unset;
+}
+
+.keybind-label {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.keybind-bind {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.keybind-button:hover .keybind-label {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.keybind {
+  padding: 0 10px;
+  border-left: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.keybind:first-child {
+  border-left: none;
+  padding-left: 0;
+}
