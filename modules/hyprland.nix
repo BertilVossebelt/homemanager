@@ -49,6 +49,13 @@ in
   wayland.windowManager.hyprland = {
     enable = true;
     systemd.enable = true;
+    # The compositor comes from the NixOS module (programs.hyprland.enable in
+    # /etc/nixos/modules/system/desktop-hyprland.nix) — that is what SDDM launches.
+    # null here stops home-manager installing a SECOND Hyprland from its own
+    # (unstable) nixpkgs, which adds a duplicate SDDM session entry and puts a
+    # mismatched hyprctl/portal on PATH. Home-manager manages the config only.
+    package = null;
+    portalPackage = null;
     configType = "hyprlang";
     extraConfig = ''
       source = ~/.config/hypr/monitors.conf
