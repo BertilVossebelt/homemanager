@@ -3,7 +3,8 @@
 
 {
   home.packages = with pkgs; [
-    firefox-devedition
+    # firefox-devedition moved to the system flake (/etc/nixos) so the browser
+    # survives a home-manager wipe — see the break-glass note there.
     xdg-desktop-portal-gtk
     signal-desktop
     slack
