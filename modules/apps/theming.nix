@@ -16,16 +16,13 @@
     ADW_DEBUG_COLOR_SCHEME = "prefer-dark";
   };
 
-  # GTK apps: prefer dark via settings.ini (no portal needed)
+  # GTK apps: Stylix owns the theme/colours/font (see modules/stylix.nix).
+  # We only keep the prefer-dark hints here; Stylix rejects gtk*.extraCss
+  # (use stylix.targets.gtk.extraCss instead if extra CSS is ever needed).
   gtk = {
     enable = true;
     gtk3.extraConfig.gtk-application-prefer-dark-theme = true;
-    gtk4 = {
-      extraConfig.gtk-application-prefer-dark-theme = true;
-      extraCss = ''
-        @import 'colors.css';
-      '';
-    };
+    gtk4.extraConfig.gtk-application-prefer-dark-theme = true;
   };
 
   # GTK4 apps that respect color-scheme (e.g. libadwaita)

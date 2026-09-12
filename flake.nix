@@ -19,6 +19,10 @@
     # so no separate astal input is needed.
     ags.url = "github:aylur/ags";
     ags.inputs.nixpkgs.follows = "nixpkgs";
+
+    # System-wide theming (colours + fonts) driven from one base16 scheme.
+    stylix.url = "github:danth/stylix";
+    stylix.inputs.nixpkgs.follows = "nixpkgs";
     # Add any AppImage or special packages here:
   };
 
@@ -59,12 +63,14 @@
           extraSpecialArgs = { inherit inputs; };
           modules = [
             inputs.ags.homeManagerModules.default
+            inputs.stylix.homeModules.stylix
             ./modules/git-setup.nix
             ./modules/packages.nix
             ./modules/apps.nix
             ./modules/hyprland.nix
             ./modules/ags.nix
             ./modules/shell.nix
+            ./modules/stylix.nix
           ];
         };
       };

@@ -1,5 +1,8 @@
+/* Colours + font are substituted from Stylix at build time (see modules/hyprland.nix).
+   Tokens: __BASE00__ background, __BASE05__ foreground, __BASE0D__ accent, __FONT__.
+   Layout, spacing and radii are hand-set and unchanged. */
 * {
-  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-family: "__FONT__", monospace;
   font-size: 13px;
   min-height: 0;
   border: none;
@@ -11,7 +14,7 @@ window#waybar {
 }
 
 window#waybar > box {
-  background-color: #000000;
+  background-color: __BASE00__;
   border-radius: 8px;
 }
 
@@ -22,24 +25,24 @@ window#waybar > box {
 #workspaces button {
   padding: 4px 12px;
   background: transparent;
-  color: rgba(255, 255, 255, 0.35);
+  color: alpha(__BASE05__, 0.35);
   border-radius: 5px;
   margin: 5px 2px;
   transition: all 0.15s ease;
 }
 
 #workspaces button.active {
-  background: #ffffff;
-  color: #000000;
+  background: __BASE0D__;
+  color: __BASE00__;
 }
 
 #workspaces button:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: #ffffff;
+  background: alpha(__BASE05__, 0.12);
+  color: __BASE05__;
 }
 
 #custom-clock {
-  color: #ffffff;
+  color: __BASE05__;
   font-weight: bold;
   padding: 0 14px;
 }
@@ -47,22 +50,22 @@ window#waybar > box {
 #network,
 #pulseaudio {
   padding: 0 10px;
-  color: rgba(255, 255, 255, 0.75);
+  color: alpha(__BASE05__, 0.75);
 }
 
 #tray {
   padding: 0 8px;
 }
 
-/* Calendar / tooltip — black & white panel, anchored under the clock module */
+/* Calendar / tooltip — themed panel, anchored under the clock module */
 tooltip {
-  background-color: #000000;
+  background-color: __BASE00__;
   border: none;
   border-radius: 8px;
 }
 
 tooltip label {
-  color: #ffffff;
+  color: __BASE05__;
   padding: 4px 6px;
   min-width: 260px;
 }

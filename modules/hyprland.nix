@@ -1,6 +1,20 @@
 # ~/Dotfiles/modules/hyprland.nix
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
+let
+  # Waybar keeps its hand-built layout; only colours + font are swapped in from
+  # Stylix (its own waybar target is disabled in modules/stylix.nix).
+  c = config.lib.stylix.colors.withHashtag;
+  waybarStyle = builtins.replaceStrings
+    [ "__BASE00__" "__BASE05__" "__BASE0D__" "__FONT__" ]
+    [ c.base00 c.base05 c.base0D config.stylix.fonts.monospace.name ]
+    (builtins.readFile ./waybar/style.css);
+  # Walker uses the sans (UI) font rather than the monospace one.
+  walkerStyle = builtins.replaceStrings
+    [ "__BASE00__" "__BASE05__" "__BASE0D__" "__FONT__" ]
+    [ c.base00 c.base05 c.base0D config.stylix.fonts.sansSerif.name ]
+    (builtins.readFile ./walker/themes/monochrome/style.css);
+in
 {
   systemd.user.services.elephant = {
     Unit = {
@@ -55,7 +69,7 @@
     "hypr/binds.conf".source      = ./hypr/binds.conf;
 
     "waybar/config.jsonc".source = ./waybar/config.jsonc;
-    "waybar/style.css".source    = ./waybar/style.css;
+    "waybar/style.css".text      = waybarStyle;
     "waybar/clock.sh" = {
       source = ./waybar/clock.sh;
       executable = true;
@@ -65,7 +79,7 @@
 
     "walker/config.toml".source                        = ./walker/config.toml;
     "walker/themes/monochrome/monochrome.toml".source  = ./walker/themes/monochrome/monochrome.toml;
-    "walker/themes/monochrome/style.css".source        = ./walker/themes/monochrome/style.css;
+    "walker/themes/monochrome/style.css".text          = walkerStyle;
     "walker/themes/monochrome/layout.xml".source       = ./walker/themes/monochrome/layout.xml;
     "walker/themes/monochrome/keybind.xml".source      = ./walker/themes/monochrome/keybind.xml;
   };
@@ -77,6 +91,13 @@
     # at Hyprland startup).
     systemd.enable = true;
   };
+
+  # Waybar reads style.css at startup and HM only restarts a service when its
+  # unit text changes — so embed the themed CSS as a restart trigger. A colour
+  # change alters this path, changing the unit, so `home-manager switch`
+  # restarts waybar and the new theme takes effect without a manual restart.
+  systemd.user.services.waybar.Unit.X-Restart-Triggers =
+    [ (pkgs.writeText "waybar-style.css" waybarStyle) ];
 
   xdg.mimeApps = {
     enable = true;
