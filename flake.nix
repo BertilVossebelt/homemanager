@@ -8,6 +8,12 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nix-flatpak.url = "github:gmodena/nix-flatpak";
 
+    # Walker is pinned to a specific nixpkgs rev so its version — and the source
+    # our text-preview patch anchors to — only change when this rev is bumped,
+    # never on a routine `nix flake update`. Pinned at walker 2.16.2. To update:
+    # point this at a newer nixpkgs rev and re-fit the patch anchor if it moved.
+    nixpkgs-walker.url = "github:NixOS/nixpkgs/567a49d1913ce81ac6e9582e3553dd90a955875f";
+
     # Astal/AGS widget shell (control center, calendar, ...).
     # The ags flake also re-exposes the astal service libs at matching versions,
     # so no separate astal input is needed.
@@ -16,9 +22,13 @@
     # Add any AppImage or special packages here:
   };
 
-  outputs = { self, nixpkgs, home-manager, ... } @ inputs:
+  outputs = { self, nixpkgs, nixpkgs-walker, home-manager, ... } @ inputs:
     let
       system = "x86_64-linux";
+
+      # Walker built from the pinned nixpkgs (see `nixpkgs-walker` input), so the
+      # version this overlay patches is frozen until that rev is bumped.
+      walkerPinned = import nixpkgs-walker { inherit system; };
 
       # Walker chooses a file preview by EXTENSION only (new_mime_guess), so
       # plain-text formats it doesn't know (.nix, .rs, .sh, ...) fall through to
@@ -27,7 +37,7 @@
       # `--replace-fail` makes a future Walker bump that moves this anchor line
       # fail the build loudly, rather than silently dropping the patch.
       walkerTextPreview = final: prev: {
-        walker = prev.walker.overrideAttrs (old: {
+        walker = walkerPinned.walker.overrideAttrs (old: {
           postPatch = (old.postPatch or "") + ''
             substituteInPlace src/preview/mod.rs \
               --replace-fail \
