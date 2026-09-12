@@ -56,6 +56,12 @@
 
     "waybar/config.jsonc".source = ./waybar/config.jsonc;
     "waybar/style.css".source    = ./waybar/style.css;
+    "waybar/clock.sh" = {
+      source = ./waybar/clock.sh;
+      executable = true;
+    };
+
+    "elephant/desktopapplications.toml".source = ./elephant/desktopapplications.toml;
 
     "walker/config.toml".source                        = ./walker/config.toml;
     "walker/themes/monochrome/monochrome.toml".source  = ./walker/themes/monochrome/monochrome.toml;
@@ -64,7 +70,13 @@
     "walker/themes/monochrome/keybind.xml".source      = ./walker/themes/monochrome/keybind.xml;
   };
 
-  programs.waybar.enable = true;
+  programs.waybar = {
+    enable = true;
+    # Run waybar as a graphical-session user service so it restarts on failure
+    # and survives system rebuilds that churn user units (exec-once only fires
+    # at Hyprland startup).
+    systemd.enable = true;
+  };
 
   xdg.mimeApps = {
     enable = true;

@@ -20,7 +20,8 @@
     claude-code
 
     # Hyprland tools
-    gsimplecal
+    networkmanagerapplet   # nm-connection-editor (network settings GUI)
+    brightnessctl          # backlight control (AGS brightness slider)
     awww
     waypaper
     walker

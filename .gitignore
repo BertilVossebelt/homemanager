@@ -1,0 +1,16 @@
+# Ignore result links created by nix build
+result
+result-*
+
+# Ignore temporary/backup files
+*.swp
+*~
+
+# Ignore potential accidental binary dumps
+*-linux-x64/
+*.deb
+*.rpm
+
+# IDE
+.idea
+.junie

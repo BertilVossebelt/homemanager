@@ -7,7 +7,7 @@
   "margin-right": 8,
   "spacing": 4,
   "modules-left":   ["hyprland/workspaces"],
-  "modules-center": ["clock"],
+  "modules-center": ["custom/clock"],
   "modules-right":  ["pulseaudio", "network", "tray"],
 
   "hyprland/workspaces": {
@@ -17,11 +17,18 @@
     "active-only": false
   },
 
-  "clock": {
-    "format": "  {:%H:%M}",
-    "format-alt": "  {:%A, %d %B %Y}",
-    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-    "on-click": "gsimplecal"
+  // Time by default; flips to the full date while the AGS control center is open.
+  // AGS owns the mode (it writes ~/.cache/waybar-clock-mode and signals us) so the
+  // clock stays in lockstep with the sidebar however it was toggled — clock click
+  // or the Super+C keybind. Built-in "clock" can't be driven externally, hence a
+  // custom module.
+  "custom/clock": {
+    "format": "{}",
+    "return-type": "json",
+    "exec": "$HOME/.config/waybar/clock.sh",
+    "interval": 10,
+    "signal": 8,
+    "on-click": "ags toggle sidebar"
   },
 
   "pulseaudio": {

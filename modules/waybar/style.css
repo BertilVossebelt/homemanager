@@ -38,7 +38,7 @@ window#waybar > box {
   color: #ffffff;
 }
 
-#clock {
+#custom-clock {
   color: #ffffff;
   font-weight: bold;
   padding: 0 14px;
@@ -52,4 +52,17 @@ window#waybar > box {
 
 #tray {
   padding: 0 8px;
+}
+
+/* Calendar / tooltip — black & white panel, anchored under the clock module */
+tooltip {
+  background-color: #000000;
+  border: none;
+  border-radius: 8px;
+}
+
+tooltip label {
+  color: #ffffff;
+  padding: 4px 6px;
+  min-width: 260px;
 }

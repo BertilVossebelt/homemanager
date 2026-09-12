@@ -1,0 +1,5 @@
+# Sort desktop applications by usage history, and apply that ordering even when
+# the search query is empty — so recently/frequently used apps float to the top
+# the moment Walker opens.
+history = true
+history_when_empty = true

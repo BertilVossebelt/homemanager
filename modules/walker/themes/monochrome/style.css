@@ -1,6 +1,6 @@
 * {
   font-family: "Inter", sans-serif;
-  font-size: 14px;
+  font-size: 15px;
   color: #ffffff;
   outline: none;
 }
@@ -15,19 +15,25 @@ window {
   background-color: #000000;
   border-radius: 8px;
   padding: 12px;
-  min-width: 800px;
+  min-width: 480px;
 }
 
 .input {
   background-color: transparent;
   color: #ffffff;
   caret-color: #ffffff;
-  border: 1px solid #ffffff;
+  border: none;
   border-radius: 4px;
   padding: 8px 4px;
   margin-bottom: 8px;
-  font-size: 16px;
   box-shadow: none;
+}
+
+/* Font size must be set on the entry's internal `text` node — the global `*`
+   rule matches it directly and would otherwise override an inherited size. */
+.input,
+.input > text {
+  font-size: 20px;
 }
 
 .input:focus {
@@ -38,6 +44,7 @@ window {
 .input placeholder {
   color: #ffffff;
   opacity: 0.4;
+  font-size: 20px;
 }
 
 .list {
@@ -54,6 +61,14 @@ window {
 .preview-stack,
 .preview-content {
   background-color: transparent;
+}
+
+/* Widen the preview pane only while a preview is actually shown (e.g. `/` file
+   search). This targets the inner content node, which Walker inserts on demand
+   — the outer `.preview` box stays empty in the app view, so the default width
+   is untouched. */
+.preview-content {
+  min-width: 960px;
 }
 
 /* GtkTextView internal nodes get dark backgrounds from the GTK4 theme */
@@ -102,7 +117,7 @@ row:selected .item-box {
 
 .item-text,
 .item-image-text {
-  font-size: 16px;
+  font-size: 17px;
   color: #ffffff;
 }
 

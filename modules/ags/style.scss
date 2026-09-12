@@ -1,0 +1,190 @@
+// Control-center panel — black & white, matching Waybar (8px corners).
+
+window.sidebar {
+  background-color: transparent;
+}
+
+.sidebar-content {
+  background-color: #000000;
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 18px;
+  min-width: 340px;
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size: 14px;
+
+  .title {
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .subtle {
+    color: rgba(255, 255, 255, 0.55);
+  }
+}
+
+// Quick settings — toggles + sliders.
+.qs-icon {
+  font-size: 18px;
+  color: #ffffff;
+}
+
+.qs-toggle {
+  all: unset;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.06);
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .qs-label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffffff;
+  }
+
+  .qs-sub {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.55);
+  }
+
+  // Active (Wi-Fi on) — inverted.
+  &.active {
+    background-color: #ffffff;
+
+    .qs-icon,
+    .qs-label {
+      color: #000000;
+    }
+
+    .qs-sub {
+      color: rgba(0, 0, 0, 0.6);
+    }
+  }
+}
+
+.qs-row {
+  padding: 4px 4px;
+}
+
+.qs-pct {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  min-width: 44px;
+}
+
+.qs-slider {
+  trough {
+    background-color: rgba(255, 255, 255, 0.18);
+    border: none;
+    border-radius: 999px;
+    min-height: 6px;
+  }
+
+  highlight,
+  trough highlight {
+    background-color: #ffffff;
+    border-radius: 999px;
+  }
+
+  slider {
+    background-image: none;
+    background-color: #ffffff;
+    border: none;
+    box-shadow: none;
+    border-radius: 999px;
+    min-width: 16px;
+    min-height: 16px;
+    margin: -6px;
+  }
+}
+
+// Session actions — power off, restart, log out.
+.power-row {
+  margin-top: 4px;
+}
+
+.power-btn {
+  all: unset;
+  padding: 12px 0;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.06);
+
+  .power-icon {
+    font-size: 20px;
+    color: #ffffff;
+  }
+
+  .power-label {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.55);
+  }
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+  }
+}
+
+// Custom calendar — black & white, no widget chrome.
+.calendar {
+  .cal-header {
+    margin-bottom: 2px;
+  }
+
+  .cal-nav {
+    all: unset;
+    padding: 0 10px;
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.55);
+
+    &:hover {
+      color: #ffffff;
+    }
+  }
+
+  .cal-title-btn {
+    all: unset;
+  }
+
+  .cal-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
+  }
+
+  .cal-title-btn:hover .cal-title {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .cal-wd {
+    font-size: 12px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.4);
+    padding: 4px 0;
+  }
+
+  .cal-day {
+    all: unset;
+    font-size: 15px;
+    color: #ffffff;
+    padding: 7px 0;
+    border-radius: 6px;
+
+    &.outside {
+      color: rgba(255, 255, 255, 0.25);
+    }
+
+    // Faint box on hover — same shape as the selected box, less pronounced.
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.12);
+    }
+
+    // The single active day. Declared last so it wins over hover/outside.
+    &.selected {
+      background-color: #ffffff;
+      color: #000000;
+    }
+  }
+}
