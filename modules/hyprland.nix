@@ -115,7 +115,6 @@ in
       "x-scheme-handler/ftp"         = "firefox-devedition.desktop";
       "x-scheme-handler/sgnl"        = "signal.desktop";
       "x-scheme-handler/signalcaptcha" = "signal.desktop";
-      "x-scheme-handler/upnote"      = "UpNote.desktop";
       "x-scheme-handler/claude-cli"  = "claude-code-url-handler.desktop";
       "x-scheme-handler/jetbrains"   = "jetbrainsd.desktop";
       "x-scheme-handler/slack"       = "slack.desktop";
