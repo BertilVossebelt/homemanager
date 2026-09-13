@@ -9,5 +9,6 @@
     ./apps/hyprlock.nix
     ./apps/hypridle.nix
     ./apps/gammastep.nix
+    ./apps/flatpak.nix
   ];
 }

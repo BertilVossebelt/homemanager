@@ -66,6 +66,7 @@
           modules = [
             inputs.ags.homeManagerModules.default
             inputs.stylix.homeModules.stylix
+            inputs.nix-flatpak.homeManagerModules.nix-flatpak
             ./modules/git-setup.nix
             ./modules/packages.nix
             ./modules/apps.nix
