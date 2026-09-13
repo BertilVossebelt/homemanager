@@ -11,16 +11,9 @@ import style from "./style.scss"
 
 const { LEFT, TOP, BOTTOM, RIGHT } = Astal.WindowAnchor
 
-// Software screen-dim, used when there's no hardware backlight. `softBright` is
-// perceived brightness in [MIN_SOFT_BRIGHT, 1]; the overlay's black opacity is
-// its complement — capped so the screen never goes fully black.
 const MIN_SOFT_BRIGHT = 0.3
 const [softBright, setSoftBright] = createState(1)
 
-// Keep the Waybar clock in sync with this control center: while the sidebar is
-// open the bar clock shows the date, otherwise the time. The sidebar's own
-// visibility is the single source of truth, so clicking the clock and the
-// Super+C keybind (both just `ags toggle sidebar`) can never drift apart.
 const CLOCK_MODE_FILE = `${GLib.get_user_cache_dir()}/waybar-clock-mode`
 function setClockMode(open: boolean) {
   execAsync([
@@ -38,20 +31,16 @@ const WEEKDAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
 
 type Cell = { day: number; year: number; month: number; outside: boolean }
 
-// Stable per-day key used to compare against and set the selected date.
 const dayKey = (y: number, m: number, d: number) => `${y}-${m}-${d}`
 
-// Build a Sunday-first 6-row grid for `offset` months from the current month.
-// Leading/trailing cells are filled with the adjacent months' days (`outside`)
-// so the crossover between months is visible.
 function monthMatrix(offset: number): { title: string; weeks: Cell[][] } {
   const now = new Date()
   const first = new Date(now.getFullYear(), now.getMonth() + offset, 1)
   const month = first.getMonth()
-  const startDow = first.getDay() // getDay() is already Sunday = 0
+  const startDow = first.getDay()
 
   const start = new Date(first)
-  start.setDate(1 - startDow) // Sunday of the first visible week
+  start.setDate(1 - startDow)
 
   const cells: Cell[] = []
   for (let i = 0; i < 42; i++) {
@@ -72,7 +61,6 @@ function monthMatrix(offset: number): { title: string; weeks: Cell[][] } {
 
 function Calendar() {
   const [offset, setOffset] = createState(0)
-  // The highlighted day. Starts on today; the title button resets it back.
   const today = () => {
     const n = new Date()
     return dayKey(n.getFullYear(), n.getMonth(), n.getDate())
@@ -96,18 +84,27 @@ function Calendar() {
             <eventbox onScroll={onScroll}>
               <box orientation={Gtk.Orientation.VERTICAL} spacing={8}>
                 <box class="cal-header">
-                  <button class="cal-nav" onClicked={() => setOffset(off - 1)}>
+                  <button
+                    class="cal-nav"
+                    canFocus={false}
+                    onClicked={() => setOffset(off - 1)}
+                  >
                     <label label="‹" />
                   </button>
                   <button
                     class="cal-title-btn"
                     hexpand
+                    canFocus={false}
                     tooltipText="Jump to today"
                     onClicked={jumpToToday}
                   >
                     <label class="cal-title" label={title} />
                   </button>
-                  <button class="cal-nav" onClicked={() => setOffset(off + 1)}>
+                  <button
+                    class="cal-nav"
+                    canFocus={false}
+                    onClicked={() => setOffset(off + 1)}
+                  >
                     <label label="›" />
                   </button>
                 </box>
@@ -131,18 +128,10 @@ function Calendar() {
                               .filter(Boolean)
                               .join(" "),
                           )}
+                          canFocus={false}
                           onClicked={() => setSelected(key)}
                           onButtonPressEvent={(_self: Gtk.Button, event: Gdk.EventButton) => {
-                            // Single left click selects (via onClicked). Double click
-                            // also opens that day in a calendar: left → Proton,
-                            // right → Google. Month is 1-based in the URLs, so +1 the
-                            // 0-based JS month. Read the button via get_button() — the
-                            // union's `button` field reads back undefined in GJS.
                             if (event.type === Gdk.EventType.DOUBLE_BUTTON_PRESS) {
-                              // Read the button via get_button(); the union's `button`
-                              // field reads back undefined in GJS. get_button() returns
-                              // [ok, button] here, but normalize for a bare-number build.
-                              // eslint-disable-next-line @typescript-eslint/no-explicit-any
                               const gb: any = (event as any).get_button?.()
                               const button =
                                 typeof gb === "number"
@@ -156,7 +145,6 @@ function Calendar() {
                                   ? `https://calendar.google.com/calendar/u/1/r/week/${date}`
                                   : `https://calendar.proton.me/u/1/week/${date}`
                               execAsync(["xdg-open", url]).catch(() => {})
-                              // Dismiss the control center once we've opened a calendar.
                               app.get_window("sidebar")?.hide()
                             }
                             return false
@@ -177,7 +165,8 @@ function Calendar() {
   )
 }
 
-// Audio output volume slider (Wireplumber default speaker).
+let volumeSlider: Astal.Slider | null = null
+
 function VolumeControl() {
   const wp = AstalWp.get_default?.()
   const speaker = wp?.defaultSpeaker
@@ -194,6 +183,7 @@ function VolumeControl() {
         max={1}
         step={0.05}
         value={volume}
+        $={(self: Astal.Slider) => (volumeSlider = self)}
         onDragged={(self: Astal.Slider) => speaker.set_volume(self.value)}
         onChangeValue={(_s: Astal.Slider, _t: Gtk.ScrollType, v: number) => {
           speaker.set_volume(Math.max(0, Math.min(1, v)))
@@ -205,8 +195,6 @@ function VolumeControl() {
   )
 }
 
-// A labelled slider row (icon · slider · percentage) that reacts to both drag
-// and scroll. `value`/`pct` are Accessors; `onSet` receives the new 0..1 value.
 function SliderRow(props: {
   icon: string
   value: unknown
@@ -236,11 +224,7 @@ function SliderRow(props: {
   )
 }
 
-// Brightness slider: real backlight via brightnessctl when a device exists
-// (laptops), otherwise a software dim overlay (desktops / external monitors).
 function BrightnessControl() {
-  // Scope to real backlight devices only — otherwise brightnessctl falls back to
-  // keyboard LEDs on machines without a backlight.
   let max = 0
   try {
     max = Number(exec(["brightnessctl", "-c", "backlight", "max"]))
@@ -271,7 +255,6 @@ function BrightnessControl() {
     )
   }
 
-  // No hardware backlight → drive the software dim overlay instead.
   return (
     <SliderRow
       icon="󰃟"
@@ -283,9 +266,6 @@ function BrightnessControl() {
   )
 }
 
-// Fullscreen, click-through black overlay for software dimming. Opacity is the
-// complement of `softBright`; hidden entirely at full brightness. One instance
-// is created per monitor so every screen dims together.
 function DimOverlay(gdkmonitor: Gdk.Monitor, index: number) {
   return (
     <window
@@ -309,8 +289,6 @@ function DimOverlay(gdkmonitor: Gdk.Monitor, index: number) {
   )
 }
 
-// Network status row — reflects the primary connection (wired/Wi-Fi) and opens
-// full network settings on click. Shows for any connection type.
 function NetworkRow() {
   const network = AstalNetwork.get_default?.()
   if (!network) return <box />
@@ -364,8 +342,132 @@ function BluetoothToggle() {
   )
 }
 
-// Session actions — power off, restart, log out. Logout exits Hyprland, mirroring
-// the `Super+Shift+E` bind; poweroff/reboot go through systemd.
+type SessionAction = { label: string; cmd: string[] }
+const [pendingAction, setPendingAction] = createState<SessionAction | null>(null)
+const [confirmChoice, setConfirmChoice] = createState<"yes" | "no">("yes")
+
+function askConfirm(action: SessionAction) {
+  setConfirmChoice("yes")
+  // Dismiss the control center so the modal sits cleanly over the whole screen
+  // rather than looking tucked beside the panel.
+  app.get_window("sidebar")?.hide()
+  setPendingAction(action)
+}
+function cancelConfirm() {
+  setPendingAction(null)
+}
+function runConfirmed() {
+  const action = pendingAction.get()
+  setPendingAction(null)
+  if (action) execAsync(action.cmd).catch(() => {})
+}
+function activateChoice() {
+  if (confirmChoice.get() === "yes") runConfirmed()
+  else cancelConfirm()
+}
+
+// Full-screen dim backdrop, one per monitor, shown while a confirmation is pending.
+function ConfirmBackdrop(gdkmonitor: Gdk.Monitor, index: number) {
+  return (
+    <window
+      name={`confirm-dim-${index}`}
+      namespace="confirm-dim"
+      application={app}
+      gdkmonitor={gdkmonitor}
+      visible={pendingAction.as((a) => a !== null)}
+      anchor={TOP | BOTTOM | LEFT | RIGHT}
+      exclusivity={Astal.Exclusivity.IGNORE}
+      layer={Astal.Layer.OVERLAY}
+      css="background-color: transparent;"
+    >
+      <box class="confirm-backdrop" hexpand vexpand />
+    </window>
+  )
+}
+
+function ConfirmDialog() {
+  return (
+    <window
+      name="confirm"
+      class="confirm"
+      namespace="confirm"
+      application={app}
+      visible={pendingAction.as((a) => a !== null)}
+      exclusivity={Astal.Exclusivity.IGNORE}
+      keymode={Astal.Keymode.EXCLUSIVE}
+      layer={Astal.Layer.OVERLAY}
+      onKeyPressEvent={(_self: Astal.Window, event: Gdk.EventKey) => {
+        const gk: any = (event as any).get_keyval?.()
+        const keyval =
+          typeof gk === "number"
+            ? gk
+            : Array.isArray(gk)
+              ? gk[1]
+              : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (event as any).keyval
+        switch (keyval) {
+          case Gdk.KEY_Left:
+            setConfirmChoice("yes")
+            return true
+          case Gdk.KEY_Right:
+            setConfirmChoice("no")
+            return true
+          case Gdk.KEY_Up:
+          case Gdk.KEY_Down:
+          case Gdk.KEY_Tab:
+          case Gdk.KEY_ISO_Left_Tab:
+            setConfirmChoice(confirmChoice.get() === "yes" ? "no" : "yes")
+            return true
+          case Gdk.KEY_Return:
+          case Gdk.KEY_KP_Enter:
+            activateChoice()
+            return true
+          case Gdk.KEY_Escape:
+            cancelConfirm()
+            return true
+          default:
+            return false
+        }
+      }}
+    >
+      <box hexpand vexpand>
+        <box
+          class="confirm-box"
+          orientation={Gtk.Orientation.VERTICAL}
+          halign={Gtk.Align.CENTER}
+          valign={Gtk.Align.CENTER}
+          spacing={18}
+        >
+          <label
+            class="confirm-title"
+            label={pendingAction.as((a) => (a ? a.label : ""))}
+          />
+          <label class="confirm-sub" label="Are you sure?" />
+          <box class="confirm-actions" homogeneous spacing={12}>
+            <button
+              class={confirmChoice.as((c) =>
+                c === "yes" ? "confirm-btn selected" : "confirm-btn",
+              )}
+              onClicked={runConfirmed}
+            >
+              <label label="Yes" />
+            </button>
+            <button
+              class={confirmChoice.as((c) =>
+                c === "no" ? "confirm-btn selected" : "confirm-btn",
+              )}
+              onClicked={cancelConfirm}
+            >
+              <label label="No" />
+            </button>
+          </box>
+        </box>
+      </box>
+    </window>
+  )
+}
+
+// Session actions
 function PowerControls() {
   const actions: { icon: string; label: string; cmd: string[] }[] = [
     { icon: "󰐥", label: "Power off", cmd: ["systemctl", "poweroff"] },
@@ -378,7 +480,7 @@ function PowerControls() {
         <button
           class="power-btn"
           tooltipText={a.label}
-          onClicked={() => execAsync(a.cmd).catch(() => {})}
+          onClicked={() => askConfirm({ label: a.label, cmd: a.cmd })}
         >
           <box orientation={Gtk.Orientation.VERTICAL} spacing={4}>
             <label class="power-icon" label={a.icon} />
@@ -390,7 +492,6 @@ function PowerControls() {
   )
 }
 
-// Left-edge control center. Hidden until toggled: `ags toggle sidebar`.
 function Sidebar() {
   return (
     <window
@@ -400,13 +501,44 @@ function Sidebar() {
       visible={false}
       anchor={LEFT | TOP | BOTTOM}
       exclusivity={Astal.Exclusivity.EXCLUSIVE}
-      keymode={Astal.Keymode.ON_DEMAND}
+      keymode={Astal.Keymode.EXCLUSIVE}
       layer={Astal.Layer.OVERLAY}
       marginTop={8}
       marginBottom={8}
       marginLeft={8}
+      onKeyPressEvent={(self: Astal.Window, event: Gdk.EventKey) => {
+        const gk: any = (event as any).get_keyval?.()
+        const keyval =
+          typeof gk === "number"
+            ? gk
+            : Array.isArray(gk)
+              ? gk[1]
+              : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (event as any).keyval
+        switch (keyval) {
+          case Gdk.KEY_Down:
+            self.child_focus(Gtk.DirectionType.TAB_FORWARD)
+            return true
+          case Gdk.KEY_Up:
+            self.child_focus(Gtk.DirectionType.TAB_BACKWARD)
+            return true
+          case Gdk.KEY_Escape:
+            self.hide()
+            return true
+          default:
+            return false
+        }
+      }}
       $={(self: Astal.Window) =>
-        self.connect("notify::visible", () => setClockMode(self.visible))
+        self.connect("notify::visible", () => {
+          setClockMode(self.visible)
+          if (self.visible)
+            GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+              if (volumeSlider) volumeSlider.grab_focus()
+              else self.child_focus(Gtk.DirectionType.TAB_FORWARD)
+              return GLib.SOURCE_REMOVE
+            })
+        })
       }
     >
       <box orientation={Gtk.Orientation.VERTICAL} class="sidebar-content" spacing={16}>
@@ -428,8 +560,10 @@ app.start({
   instanceName: "ags",
   css: style,
   main() {
-    setClockMode(false) // sidebar starts hidden → bar clock shows the time
+    setClockMode(false)
     Sidebar()
+    app.get_monitors().forEach((m, i) => ConfirmBackdrop(m, i))
+    ConfirmDialog()
     app.get_monitors().forEach((m, i) => DimOverlay(m, i))
   },
 })

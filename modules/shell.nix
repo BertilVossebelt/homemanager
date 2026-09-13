@@ -1,24 +1,31 @@
 # ~/Dotfiles/modules/shell.nix
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   c = config.lib.stylix.colors;
   # Truecolor SGR sequence from a Stylix base16 slot (e.g. "base0D").
   mkAnsi = base: "38;2;${c."${base}-rgb-r"};${c."${base}-rgb-g"};${c."${base}-rgb-b"}";
+
+  # Turn a plain art file into a fastfetch logo: '*'/'+' -> colour 1, '-' ->
+  # colour 2. Edit fastfetch/nixos-art.txt in raw *, +, - and spaces; this
+  # inserts the $N codes automatically so no hand-coding is needed.
+  logoColored = builtins.replaceStrings
+    [ "*" "+" "-" ] [ "$1*" "$1+" "$2-" ]
+    (builtins.readFile ./fastfetch/nixos-art.txt);
+  logoFile = pkgs.writeText "nixos-logo" logoColored;
 in
 {
   programs.fastfetch = {
     enable = true;
     settings = {
-      # Custom two-lambda NixOS logo. The file marks one lambda with $1 and the
-      # other with $2; colours are pulled from Stylix so the logo recolours with
-      # the active scheme. type = "file" (not "file-raw") so $N are resolved.
+      # Custom two-lambda NixOS logo generated from nixos-art.txt (above).
+      # Colours come from Stylix so the logo recolours with the active scheme.
       logo = {
         type = "file";
-        source = "${./fastfetch/nixos.txt}";
+        source = "${logoFile}";
         color = {
-          "1" = mkAnsi "base0D";  # accent lambda
-          "2" = mkAnsi "base05";  # light foreground lambda
+          "1" = mkAnsi "base0D";  # * / + lambda (accent)
+          "2" = mkAnsi "base05";  # - lambda (light foreground)
         };
         padding = {
           top = 1;
